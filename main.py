@@ -1,25 +1,54 @@
 """
 Password Manager
 
-This script creates a GUI application using Tkinter to:
-1. Generate secure random passwords.
-2. Copy generated passwords to the clipboard.
-3. Save website, email/username, and password entries to a text file.
+This script provides a Tkinter-based GUI to:
+1. Search stored account credentials by website.
+2. Generate secure random passwords and copy them to the clipboard.
+3. Save new credentials (website, username, password) to a JSON file.
 """
 
 from tkinter import *
 from tkinter import messagebox
 
+import json
 import random
 import string
 import pyperclip
 
 FONT = ("Helvetica", 16)
 
+# ---------------------------- SEARCH FUNCTION ------------------------------- #
+def search():
+    """
+    Look up the entered website in the JSON data file.
+    If found, display the stored username and password in an info dialog.
+    If not found (or file missing), show an appropriate error message.
+    """
+    search_website = website_input.get()
+
+    try:
+        accounts = json.load(open("./assets/password_manager.json", "r"))
+
+        if search_website in accounts:
+            messagebox.showinfo(title=f"Account Info for {search_website}", message=f"Email/Username:\n"
+                                                                                    f"{accounts[search_website]['username']}\n\n"
+                                                                                    f"Password:\n"
+                                                                                    f"{accounts[search_website]['password']}")
+        else:
+            messagebox.showinfo("Account Not Found",
+                                "Sorry, there is no available account info for the website provided.")
+
+
+    except FileNotFoundError:
+        messagebox.showerror("File Not Found", "Sorry, there is no file with your accounts available.\n"
+                                           "Add an account to get started.")
+
+
+# ---------------------------- PASSWORD GENERATOR ------------------------------- #
 def generate_pass():
     """
-    Build a 16-character password from letters, digits, and punctuation.
-    Copy it to the clipboard and display it in the password field.
+    Create a 16-character password mixing letters, digits, and punctuation.
+    Copy it to the clipboard and display it in the password entry field.
     """
     generated_pass = ""
     for random_char in range(16):
@@ -40,36 +69,43 @@ def generate_pass():
 
 def store_info():
     """
-    Validate inputs, confirm with the user, and append the data to a text file.
-    Clears the input fields upon successful save.
+    Validate that all fields are filled, then save the credentials into a JSON file.
+    - On first save, create the JSON file.
+    - On subsequent saves, load existing data and update it.
+    Clears input fields after saving.
     """
     website = website_input.get()
-    email = email_user_input.get()
+    username = username_input.get()
     password = password_input.get()
+    account = {
+        website: {
+        'username': username,
+        'password': password,
+        },
+    }
 
     # Ensure no field is empty
-    if website == "" or email == "" or password == "":
-        messagebox.showerror("Empty Field Error", "Please fill all the fields, then try again.")
+    if website == "" or username == "" or password == "":
+        messagebox.showinfo("Cannot add Account", "Please fill all the fields, then try again.")
     else:
-        # Show a confirmation dialog
-        confirmation = messagebox.askokcancel("Confirm",f"These are the details entered:\n\n"
-                                               f"Website: {website}\n"
-                                               f"Email/Username: {email}\n"
-                                               f"Password: {password}\n\n"
-                                                f"Would you like to continue?\n")
-
-        if confirmation:
-            # Append to file
-            with open(file="./assets/password_manager.txt", mode="a") as f:
-                account_info = f"{website} | {email} | {password}\n"
-                f.write(account_info)
-
+        try:
+            with open(file="./assets/password_manager.json", mode="r") as f:
+                data = json.load(f)
+        except FileNotFoundError:
+            with open(file="./assets/password_manager.json", mode="w") as f:
+                json.dump(account, f, indent=4)
+        else:
+            # Merge new entry and write back to file
+            data.update(account)
+            with open(file="./assets/password_manager.json", mode="w") as f:
+                json.dump(data, f, indent=4)
+        finally:
             # Clear inputs after saving
             website_input.delete(0, END)
-            email_user_input.delete(0, END)
+            username_input.delete(0, END)
             password_input.delete(0, END)
 
-
+# ---------------------------- UI SETUP ------------------------------- #
 
 window = Tk()
 window.title("Password Manager")
@@ -81,24 +117,28 @@ logo_image = PhotoImage(file = "./assets/logo.png")
 logo.create_image(100,100, image=logo_image)
 logo.grid(row = 0, column = 1)
 
-# Website label & entry
+# Website label, entry, and search button
 website_label = Label(window, text = "Website:")
 website_label.config(font = FONT)
 website_label.grid(row = 1, column = 0)
 
 website_input = Entry(window)
-website_input.config(font = FONT, width = 35)
+website_input.config(font = FONT, width = 21)
 website_input.grid(row = 1, column = 1, columnspan = 2, sticky= W)
 website_input.focus()
 
-# Email/Username label & entry
-email_user_label = Label(window, text = "Email/Username:")
-email_user_label.config(font = FONT)
-email_user_label.grid(row = 2, column = 0)
+search_button = Button(window, text = "Search", command=search, width = 14)
+search_button.config(font = FONT)
+search_button.grid(row = 1, column = 2)
 
-email_user_input = Entry(window)
-email_user_input.config(font = FONT, width = 35)
-email_user_input.grid(row = 2, column = 1, columnspan = 2, sticky= W)
+# Email/Username label & entry
+username_label = Label(window, text ="Email/Username:")
+username_label.config(font = FONT)
+username_label.grid(row = 2, column = 0)
+
+username_input = Entry(window)
+username_input.config(font = FONT, width = 35)
+username_input.grid(row = 2, column = 1, columnspan = 2, sticky= W)
 
 # Password label & entry
 password_label = Label(window, text = "Password:")
