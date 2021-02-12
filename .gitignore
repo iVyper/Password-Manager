@@ -2,4 +2,4 @@
 .idea
 
 # Account Info File
-/assets/password_manager.txt
+/assets/password_manager.json
