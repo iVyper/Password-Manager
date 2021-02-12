@@ -1,0 +1,5 @@
+# PyCharm IDE's Project Files
+.idea
+
+# Account Info File
+/assets/password_manager.txt
