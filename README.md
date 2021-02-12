@@ -1,72 +1,81 @@
 # Password Manager
 
 ## Project Description
-This Password Manager is a desktop GUI application built with Python’s **Tkinter** library. It helps you:
-1. Generate a secure, random 16-character password (letters, digits, punctuation).  
-2. Automatically copy the generated password to your clipboard.  
-3. Save website, email/username, and password entries to a local text file (`password_manager.txt`) with a confirmation dialog.
+Password Manager is a desktop GUI application built with Python’s `tkinter` that helps you securely generate, store, and retrieve website login credentials. It generates strong random passwords, copies them to your clipboard, and saves your data in a structured JSON file (`password_manager.json`) instead of a plain text file.
 
 ## Features
-- **Secure Password Generation**: Random mix of uppercase/lowercase letters, digits, and symbols.  
-- **Clipboard Copy**: Generated passwords are auto-copied for easy pasting.  
-- **Data Persistence**: Stores credentials (website, email/username, password) in `./assets/password_manager.txt`.  
-- **Input Validation**: Alerts you if any field is empty, and asks for confirmation before saving.  
-- **Clear-on-Save**: Clears the input fields after a successful save to streamline multiple entries.
+- **Generate Secure Passwords**  
+  - Random mix of letters, digits, and symbols  
+  - Configurable length and complexity  
+  - One-click copy to clipboard via `pyperclip`  
+- **Store Credentials**  
+  - Save website name, email/username, and password in `assets/password_manager.json`  
+  - Data persists between sessions  
+- **Search & Retrieve**  
+  - Look up saved credentials by website name  
+  - Pop-up alerts for found or missing entries  
+- **Friendly GUI**  
+  - Built with `tkinter` for a simple, intuitive interface  
+  - Input validation and error handling with message boxes  
 
 ## Prerequisites
 - **Python 3.x**  
-- **Tkinter** (included with most Python installations)  
-- **pyperclip** (for clipboard functionality)  
+- **Required Packages**  
   ```bash
   pip install pyperclip
   ```
 
 ## Installation
-
-1. **Clone or download** this repository to your local machine.  
-2. **Install dependencies** (if needed):
+1. **Clone or download** this repository.  
+2. **Install dependencies**:  
    ```bash
    pip install pyperclip
    ```
+3. **Ensure the data folder exists**:  
+   - `assets/password_manager.json` will be created automatically on first run.
 
 ## How to Run
-
-1. Open a terminal or command prompt and navigate to the project directory (where `main.py` resides).  
+1. Open a terminal and navigate to the project root (where `main.py` resides).  
 2. Launch the application:
    ```bash
    python main.py
    ```
-3. The password manager window will open.
+3. Use the GUI to:
+   - Enter a website, your email/username, and either paste or generate a password.  
+   - Click **Generate Password** to create & copy a strong password.  
+   - Click **Store Login Info** to save your entry.  
+   - Use the **Search** button to retrieve credentials for a specific website.
 
-## Usage
+## Demo
+![Password Generator Demo](./screenshots/demo.gif)
 
-1. **Website**: Enter the site name or URL.  
-2. **Email/Username**: Enter your login email or username.  
-3. **Generate Password**: Click **Generate Password** to fill and copy a secure password.  
-4. **Store Login Info**: Click **Store Login Info**. Confirm the details, and they’ll be appended to `./assets/password_manager.txt`.  
-5. The fields will clear, ready for a new entry.
+## Application Layout
+| Field               | Description                              |
+|---------------------|------------------------------------------|
+| Website             | The site or service name (e.g., “Gmail”) |
+| Email/Username      | Your login email or user handle          |
+| Password            | Your password (auto-generated or custom) |
+| Generate Password   | Creates a new random password            |
+| Store Login Info    | Saves entry to `password_manager.json`   |
+| Search              | Finds and displays stored credentials    |
 
-## Example
-
-![Password Manager Demo](./screenshots/demo.gif)
-
-- After clicking **Generate Password**, the password field populates and copies to clipboard.  
-- On **Store Login Info**, a confirmation appears, then the data is saved.
-
-## Project Structure
-
-```
-Password Manager/
-├── assets/
-│   ├── logo.png                     # App logo displayed in GUI
-│   └── password_manager.txt         # Stored credentials (created/appended)
-├── main.py                          # Tkinter GUI and logic for generating/saving passwords
-├── LICENSE                          # MIT License
-└── .gitignore                       # Common ignores (e.g., __pycache__)
+## Data Storage
+All credentials are stored in `assets/password_manager.json` in the form:
+```json
+{
+  "example.com": {
+    "email": "user@example.com",
+    "password": "Ab#3xY9!"
+  },
+  "another-site.org": {
+    "email": "me@another.org",
+    "password": "X7!kLp#2"
+  }
+}
 ```
 
 ## License
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ## Author
 - **Ivis Perdomo** ([ivyper](https://github.com/ivyper))
